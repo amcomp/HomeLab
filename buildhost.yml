@@ -1,14 +1,10 @@
-# Build the Ubuntu host
-- import_playbook: ./tasks/buildhost/sudosetup.yml
+# Run apt update and upgrade
 - import_playbook: ./tasks/buildhost/updates.yml
-
-# Build the containers on the Ubunutu host 
-- import_playbook: ./tasks/dockercontrol/netalertx/netalertDocker.yml
-- import_playbook: ./tasks/dockercontrol/mealie/mealieDocker.yml
+# Ensure passwordless sudo is configured
+- import_playbook: ./tasks/buildhost/sudosetup.yml
+# Places Restic backup script
+- import_playbook: ./tasks/backupscontrol/containerCron.yml
+# Playbook to place keyfiles for Homepage
 - import_playbook: ./tasks/dockercontrol/homepage/homepageDocker.yml
-- import_playbook: ./tasks/dockercontrol/npm/npmDocker.yml
-- import_playbook: ./tasks/dockercontrol/portainer/portainerDocker.yml
-- import_playbook: ./tasks/backupscontrol/containerCron.yml
-
-# control conatiner backups
-- import_playbook: ./tasks/backupscontrol/containerCron.yml
+# Update or Deploy the full Stack
+- import_playbook: ./tasks/dockercontrol/deployStack.yml

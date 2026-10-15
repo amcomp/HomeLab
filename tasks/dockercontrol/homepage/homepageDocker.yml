@@ -11,18 +11,6 @@
         state: directory
         mode: '0755'
 
-    - name: Copy templated docker-compose.yml to host
-      ansible.builtin.template:
-        src: ./docker-compose.yml
-        dest: "{{ remote_dir }}/homepage/docker-compose.yml"
-        mode: '0644'
-
-    - name: Copy templated env to host
-      ansible.builtin.copy:
-        src: ./.env
-        dest: "{{ remote_dir }}/homepage/.env"
-        mode: '0644'
-
     - name: Copy templated bookmarks to host
       ansible.builtin.copy:
         src: ./keyfiles/bookmarks.yaml
@@ -40,11 +28,3 @@
         src: ./keyfiles/widgets.yaml
         dest: "{{ remote_dir }}/homepage/config/widgets.yaml"
         mode: '0644'
-
-
-
-    - name: Start or update the Docker Compose stack
-      community.docker.docker_compose_v2:
-        project_src: "{{ remote_dir }}/homepage"
-        state: present
-        pull: always     # Pulls new images if available

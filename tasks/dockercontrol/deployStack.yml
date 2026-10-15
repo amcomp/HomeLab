@@ -1,0 +1,38 @@
+- name: Deploy Docker stacks
+  hosts: lab
+  become: true
+  vars:
+    stacks: [netalertx, mealie, homepage, npm, immich, portainer]
+    # This line enables the admin to deploy a single service, add -e only=containername
+    deploy_list: "{{ [only] if only is defined else stacks }}"
+  tasks:
+    - name: Ensure project directories exist
+      ansible.builtin.file:
+        path: "{{ remote_dir }}/{{ item }}"
+        state: directory
+        owner: "{{ admin_user }}"
+        mode: '0755'
+      loop: "{{ deploy_list }}"
+
+    - name: Copy docker-compose.yml
+      ansible.builtin.copy:
+        src: "{{ inventory_dir }}/tasks/dockercontrol/{{ item }}/docker-compose.yml"
+        dest: "{{ remote_dir }}/{{ item }}/docker-compose.yml"
+        owner: "{{ admin_user }}"
+        mode: '0644'
+      loop: "{{ deploy_list }}"
+
+    - name: Copy .env
+      ansible.builtin.copy:
+        src: "{{ inventory_dir }}/tasks/dockercontrol/{{ item }}/.env"
+        dest: "{{ remote_dir }}/{{ item }}/.env"
+        owner: "{{ admin_user }}"
+        mode: '0600'
+      loop: "{{ deploy_list }}"
+
+    - name: Start or update the stacks
+      community.docker.docker_compose_v2:
+        project_src: "{{ remote_dir }}/{{ item }}"
+        state: present
+        pull: always
+      loop: "{{ deploy_list }}"
