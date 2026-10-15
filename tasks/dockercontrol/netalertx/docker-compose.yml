@@ -1,0 +1,42 @@
+services:
+  netalertx:
+    container_name: netalertx
+    image: ghcr.io/netalertx/netalertx:latest        # pin to a specific tag once it's running
+    network_mode: ${NETALERTX_NETWORK_MODE:-host}    # host networking for ARP scanning
+
+    read_only: true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_ADMIN         # ARP scanning
+      - NET_RAW           # raw sockets
+      - NET_BIND_SERVICE  # privileged ports (nbtscan)
+      - CHOWN             # root-entrypoint chowns /data + /tmp before dropping privileges
+      - SETUID
+      - SETGID
+
+    # ARP flux mitigation (arp_ignore / arp_announce) is set on the VM itself via
+    # /etc/sysctl.d/, because Docker rejects these sysctls under host networking.
+
+    volumes:
+      - ${DATA_VOLUME}
+      - ${TIME_VOLUME}
+
+    tmpfs:
+      - "/tmp:uid=${NETALERTX_UID:-20211},gid=${NETALERTX_GID:-20211},mode=1700,rw,noexec,nosuid,nodev,async,noatime,nodiratime"
+
+    environment:
+      LISTEN_ADDR: ${LISTEN_ADDR:-0.0.0.0}
+      PORT: ${PORT:-20211}
+      GRAPHQL_PORT: ${GRAPHQL_PORT:-20212}
+
+    mem_limit: 2048m
+    mem_reservation: 1024m
+    cpu_shares: 512
+    pids_limit: 512
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    restart: unless-stopped

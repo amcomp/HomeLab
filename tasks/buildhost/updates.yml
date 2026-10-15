@@ -1,0 +1,10 @@
+- name: Update and upgrade system packages
+  hosts: lab
+  become: true
+  tasks:
+   - name: Apt update and Upgrade
+     ansible.builtin.apt:
+       update_cache: yes
+       upgrade: yes
+       autoclean: true
+       autoremove: true

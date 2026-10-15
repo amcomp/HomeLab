@@ -1,0 +1,23 @@
+- name: Prepare Backup Cron job
+  hosts: lab
+  become: true
+  tasks:
+    - name: Schedule a daily container backup at 3 AM
+      ansible.builtin.cron:
+        name: "daily container backup"
+        user: cloud
+        minute: "0"
+        hour: "3"
+        job: "/bin/bash /home/cloud/docker/rsync/immich-backup.sh >> /home/cloud/docker/rsync/backup.log 2>&1"
+  
+    - name: place backup script
+      ansible.builtin.copy:
+        src: ./keyfiles/immich-backup.sh
+        dest: "{{ remote_dir }}/rsync/immich-backup.sh"
+        mode: '0644'
+
+    - name: Pull log file from remote to local
+      ansible.builtin.fetch:
+        src: "{{ remote_dir }}/rsync/backup.log"
+        dest: ./keyfiles/backup.log
+        flat: yes

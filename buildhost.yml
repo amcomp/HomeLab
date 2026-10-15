@@ -1,0 +1,14 @@
+# Build the Ubuntu host
+- import_playbook: ./tasks/buildhost/sudosetup.yml
+- import_playbook: ./tasks/buildhost/updates.yml
+
+# Build the containers on the Ubunutu host 
+- import_playbook: ./tasks/dockercontrol/netalertx/netalertDocker.yml
+- import_playbook: ./tasks/dockercontrol/mealie/mealieDocker.yml
+- import_playbook: ./tasks/dockercontrol/homepage/homepageDocker.yml
+- import_playbook: ./tasks/dockercontrol/npm/npmDocker.yml
+- import_playbook: ./tasks/dockercontrol/portainer/portainerDocker.yml
+- import_playbook: ./tasks/backupscontrol/containerCron.yml
+
+# control conatiner backups
+- import_playbook: ./tasks/backupscontrol/containerCron.yml

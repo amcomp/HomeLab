@@ -1,0 +1,14 @@
+*.env
+dockercontrol/homepage/keyfiles
+group_vars/all.yml
+tasks/backupscontrol/containerCron.yml
+tasks/proxmox/gethypervisor.yml
+group_vars/all.yml
+inventory.ini
+tasks/backupscontrol/keyfiles/backup.log
+.gitignore
+tasks/backupscontrol/keyfiles/immich-backup.sh
+tasks/dockercontrol/homepage/keyfiles/services.yaml
+.gitignore
+tasks/dockercontrol/homepage/keyfiles/bookmarks.yaml
+tasks/dockercontrol/homepage/keyfiles/widgets.yaml

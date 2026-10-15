@@ -1,0 +1,50 @@
+---
+- name: Deploy homepage
+  hosts: lab
+  become: true
+  
+
+  tasks:
+    - name: Ensure target project directory exists
+      ansible.builtin.file:
+        path: "{{ remote_dir }}/homepage"
+        state: directory
+        mode: '0755'
+
+    - name: Copy templated docker-compose.yml to host
+      ansible.builtin.template:
+        src: ./docker-compose.yml
+        dest: "{{ remote_dir }}/homepage/docker-compose.yml"
+        mode: '0644'
+
+    - name: Copy templated env to host
+      ansible.builtin.copy:
+        src: ./.env
+        dest: "{{ remote_dir }}/homepage/.env"
+        mode: '0644'
+
+    - name: Copy templated bookmarks to host
+      ansible.builtin.copy:
+        src: ./keyfiles/bookmarks.yaml
+        dest: "{{ remote_dir }}/homepage/config/bookmarks.yaml"
+        mode: '0644'
+
+    - name: Copy services to host
+      ansible.builtin.copy:
+        src: ./keyfiles/services.yaml
+        dest: "{{ remote_dir }}/homepage/config/services.yaml"
+        mode: '0644'
+
+    - name: Copy templated widgets to host
+      ansible.builtin.copy:
+        src: ./keyfiles/widgets.yaml
+        dest: "{{ remote_dir }}/homepage/config/widgets.yaml"
+        mode: '0644'
+
+
+
+    - name: Start or update the Docker Compose stack
+      community.docker.docker_compose_v2:
+        project_src: "{{ remote_dir }}/homepage"
+        state: present
+        pull: always     # Pulls new images if available

@@ -1,0 +1,29 @@
+---
+- name: Deploy netalertx
+  hosts: lab
+  become: true
+  
+
+  tasks:
+    - name: Ensure target project directory exists
+      ansible.builtin.file:
+        path: "{{ remote_dir }}/netalertx"
+        state: directory
+        mode: '0755'
+    - name: Copy templated docker-compose.yml to host
+      ansible.builtin.copy:
+        src: ./docker-compose.yml
+        dest: "{{ remote_dir }}/netalertx/docker-compose.yml"
+        mode: '0644'
+
+    - name: Copy templated env to host
+      ansible.builtin.template:
+        src: ./.env
+        dest: "{{ remote_dir }}/netalertx/.env"
+        mode: '0644'
+
+    - name: Start or update the Docker Compose stack
+      community.docker.docker_compose_v2:
+        project_src: "{{ remote_dir }}/netalertx"
+        state: present
+        pull: always     # Pulls new images if available
