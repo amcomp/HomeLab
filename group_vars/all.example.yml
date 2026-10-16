@@ -1,0 +1,3 @@
+---
+admin_user: "Specify a Linux host user"
+remote_dir: "Specify where your docker-compose directories are on the Linux Host"
