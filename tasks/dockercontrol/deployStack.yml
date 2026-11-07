@@ -2,7 +2,7 @@
   hosts: lab
   become: true
   vars:
-    stacks: [netalertx, mealie, homepage, npm, immich, portainer]
+    stacks: [mealie, homepage, npm, immich, portainer] #this list defines the targeted containers. text here matches the names of the conatiner project folders under/tasks/dockercontrol/
     # This line enables the admin to deploy a single service, add -e only=containername
     deploy_list: "{{ [only] if only is defined else stacks }}"
   tasks:

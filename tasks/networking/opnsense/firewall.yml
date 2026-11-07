@@ -1,0 +1,31 @@
+---
+- name: Retrieve OPNsense VLANs and Firewall Rules
+  hosts: firewalls
+  connection: local
+  gather_facts: false
+
+  module_defaults:
+    group/oxlorg.opnsense.all:
+      firewall: "{{ lookup('env', 'OPNSENSE_HOST') }}"
+      api_key: "{{ lookup('env', 'OPNSENSE_API_KEY') }}"
+      api_secret: "{{ lookup('env', 'OPNSENSE_API_SECRET') }}"
+      ssl_verify: true
+
+  tasks:
+    - name: Get VLANs
+      oxlorg.opnsense.list:
+        target: interface_vlan
+      register: vlans
+
+    - name: Display VLANs
+      ansible.builtin.debug:
+        msg: "{{ vlans.data | to_nice_json }}"
+
+    - name: Get Firewall Rules
+      oxlorg.opnsense.list:
+        target: rule
+      register: firewall_rules
+
+    - name: Display Firewall Rules
+      ansible.builtin.debug:
+        msg: "{{ firewall_rules.data }}"
